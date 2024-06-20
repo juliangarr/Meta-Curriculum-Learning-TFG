@@ -1,12 +1,13 @@
 from utiles import *
 from mapa import *
+import numpy as np
 
 class Estado:
 
     def __init__(self, mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador = True):
         self.mapa = mapa
         self.orientacion_jugador = orientacion_jugador
-        self.posicion_jugador = posicion_jugador
+        self.posicion_jugador = np.array(posicion_jugador)
         self.steps = pasos_jugador
         self.tiene_llave = llave_jugador
         self.alive = vivo_jugador
@@ -61,10 +62,10 @@ class Estado:
         
     def get_orientation_offset(self):
         moves = {
-            0: (-1, 0),   # UP: Mueve hacia arriba (fila - 1)
-            1: (0, 1),    # RIGHT: Mueve hacia la derecha (columna + 1)
-            2: (1, 0),    # DOWN: Mueve hacia abajo (fila + 1)
-            3: (0, -1)    # LEFT: Mueve hacia la izquierda (columna - 1)
+            0: np.array([-1, 0]),   # UP: Mueve hacia arriba (fila - 1)
+            1: np.array([0, 1]),    # RIGHT: Mueve hacia la derecha (columna + 1)
+            2: np.array([1, 0]),    # DOWN: Mueve hacia abajo (fila + 1)
+            3: np.array([0, -1])    # LEFT: Mueve hacia la izquierda (columna - 1)
         }
         return moves[self.orientacion_jugador]
     

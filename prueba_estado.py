@@ -1,4 +1,3 @@
-import sys
 import os
 
 # Asegúrate de que estás en el directorio correcto para acceder a los archivos
@@ -23,10 +22,10 @@ estado = Estado(mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llav
 
 # Función para imprimir el estado actual del mapa y jugador
 def print_estado(estado):
-    os.system('clear')  # Limpiar la pantalla para Unix/Linux/Mac
+    #os.system('clear')  # Limpiar la pantalla para Unix/Linux/Mac
     for i in range(estado.mapa.rows):
         for j in range(estado.mapa.cols):
-            if (i, j) == estado.posicion_jugador:
+            if (i, j) == tuple(estado.posicion_jugador):
                 print('J', end=' ')
             else:
                 print(estado.mapa.get_cell_type((i, j)), end=' ')

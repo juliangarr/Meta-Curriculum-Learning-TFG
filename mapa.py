@@ -15,7 +15,10 @@ class Mapa:
             lineas = [linea.strip() for linea in archivo.readlines()]
         
         # Convertir las líneas en una matriz
-        matriz_mapa = [list(linea) for linea in lineas]
+        matriz_mapa = []
+        for linea in lineas:
+            fila = [int(caracter) for caracter in linea]  # Convertir caracteres a enteros
+            matriz_mapa.append(fila)
         
         return matriz_mapa
 
@@ -50,4 +53,4 @@ class Mapa:
         return door
     '''
     def set_cell(self, position, cell_type):
-        self.mapa[position[0]][position[1]] = cell_type
+        self.mapa[position[0]][position[1]] = int(cell_type)
