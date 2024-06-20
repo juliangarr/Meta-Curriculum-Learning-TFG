@@ -1,0 +1,63 @@
+import sys
+import os
+
+# Asegúrate de que estás en el directorio correcto para acceder a los archivos
+# Por si ejecutas el script main.py desde un directorio diferente al que contiene estos módulos.
+# sys.path.append(os.path.abspath('.'))
+
+from utiles import *
+from mapa import *
+from estado import *
+
+# Definir un mapa de ejemplo para inicialización
+mapa = Mapa('zelda_lvl0.txt')
+
+# Posición inicial del jugador y orientación (por ejemplo, arriba (0))
+posicion_jugador = (1, 1)  # Cambia esta posición según el mapa
+orientacion_jugador = 0  # 0: UP, 1: RIGHT, 2: DOWN, 3: LEFT
+pasos_jugador = 0
+llave_jugador = False
+vivo_jugador = True
+
+estado = Estado(mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador)
+
+# Función para imprimir el estado actual del mapa y jugador
+def print_estado(estado):
+    os.system('clear')  # Limpiar la pantalla para Unix/Linux/Mac
+    for i in range(estado.mapa.rows):
+        for j in range(estado.mapa.cols):
+            if (i, j) == estado.posicion_jugador:
+                print('J', end=' ')
+            else:
+                print(estado.mapa.get_cell_type((i, j)), end=' ')
+        print()
+    print(f"Posición del jugador: {estado.posicion_jugador}")
+    print(f"Orientación del jugador: {estado.orientacion_jugador}")
+    print(f"Pasos del jugador: {estado.steps}")
+    print(f"Jugador tiene llave: {estado.tiene_llave}")
+    print(f"Jugador está vivo: {estado.alive}")
+
+# Función para convertir teclas en acciones
+def get_action_from_key(key):
+    if key == 'w':
+        return Action.FORWARD
+    elif key == 'a':
+        return Action.TURN_LEFT
+    elif key == 'd':
+        return Action.TURN_RIGHT
+    elif key == 'p':
+        return Action.ATACK
+    else:
+        return Action.IDLE
+
+# Bucle principal del juego
+while estado.alive and not estado.is_win(Task.ZELDA):
+    print_estado(estado)
+    key = input("Introduce una acción (W/A/S/D/P): ").lower()
+    action = get_action_from_key(key)
+    estado = estado.apply_action(action)
+
+if estado.alive:
+    print("¡Has ganado!")
+else:
+    print("¡Has muerto!")
