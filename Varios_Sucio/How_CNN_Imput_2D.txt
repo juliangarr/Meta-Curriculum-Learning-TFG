@@ -1,0 +1,84 @@
+Clase Estado Actualizada
+
+import numpy as np
+
+class Estado:
+    def __init__(self, mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador=True):
+        self.mapa = mapa
+        self.orientacion_jugador = orientacion_jugador
+        self.posicion_jugador = np.array(posicion_jugador, dtype=int)
+        self.steps = pasos_jugador
+        self.tiene_llave = llave_jugador
+        self.alive = vivo_jugador
+    
+    def flatten_state(self):
+        # Flatten the map using the flatten_map method and add channel dimension
+        flattened_map = self.mapa.flatten_map().reshape((self.mapa.rows, self.mapa.cols, 1))
+        
+        # Convert other attributes to a flat array
+        other_info = np.array([
+            self.posicion_jugador[0], self.posicion_jugador[1],
+            self.orientacion_jugador, self.steps,
+            self.tiene_llave, self.alive
+        ], dtype=np.float32)  # Convert to float32 for TensorFlow compatibility
+        
+        # Ensure the final state includes the map with channels and other information
+        return flattened_map, other_info
+
+# Ejemplo de uso
+mapa = Mapa('nombre_del_archivo.txt')
+posicion_jugador = [1, 2]
+orientacion_jugador = 1
+pasos_jugador = 5
+llave_jugador = 1
+
+estado = Estado(mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador)
+flattened_map, other_info = estado.flatten_state()
+print(flattened_map.shape)  # Debe ser (n, m, 1)
+print(other_info)           # Debe ser un vector de longitud 6
+
+
+
+ADAPTACION MODELO:
+import tensorflow as tf
+
+# Define the input shapes
+map_input_shape = (mapa.rows, mapa.cols, 1)  # Shape of the map with channel dimension
+info_input_shape = (6,)  # Shape of the other information vector
+
+# Create the map input model
+map_input = tf.keras.layers.Input(shape=map_input_shape, name='map_input')
+x = tf.keras.layers.Conv2D(filters=32, kernel_size=3, activation="relu")(map_input)
+x = tf.keras.layers.Flatten()(x)
+
+# Create the other info input model
+info_input = tf.keras.layers.Input(shape=info_input_shape, name='info_input')
+
+# Combine the outputs
+combined = tf.keras.layers.Concatenate()([x, info_input])
+output = tf.keras.layers.Dense(units=self.num_actions, activation='softmax')(combined)
+
+# Define the model
+model = tf.keras.Model(inputs=[map_input, info_input], outputs=output)
+
+
+Ejemplo de Uso
+
+# Ejemplo de uso con prueba completa
+mapa = Mapa('nombre_del_archivo.txt')
+posicion_jugador = [1, 2]
+orientacion_jugador = 1
+pasos_jugador = 5
+llave_jugador = 1
+
+estado = Estado(mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador)
+flattened_map, other_info = estado.flatten_state()
+
+# Asegúrate de que los datos tengan la forma correcta
+flattened_map = np.expand_dims(flattened_map, axis=0)  # Add batch dimension
+other_info = np.expand_dims(other_info, axis=0)        # Add batch dimension
+
+# Realiza una predicción
+prediccion = model.predict([flattened_map, other_info])
+print(prediccion)
+

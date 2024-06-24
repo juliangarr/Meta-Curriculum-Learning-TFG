@@ -1,12 +1,10 @@
-import os
-
 # Asegúrate de que estás en el directorio correcto para acceder a los archivos
-# Por si ejecutas el script main.py desde un directorio diferente al que contiene estos módulos.
+# Por si ejecutas el script prueba_Estado.py desde un directorio diferente al que contiene estos módulos.
 # sys.path.append(os.path.abspath('.'))
 
-from utiles import *
-from mapa import *
-from estado import *
+from Utiles import *
+from Mapa import *
+from Estado import *
 
 # Definir un mapa de ejemplo para inicialización
 mapa = Mapa('zelda_lvl0.txt')
@@ -35,6 +33,12 @@ def print_estado(estado):
     print(f"Pasos del jugador: {estado.steps}")
     print(f"Jugador tiene llave: {estado.tiene_llave}")
     print(f"Jugador está vivo: {estado.alive}")
+    print('\n')
+    print(estado.flatten_state())
+    print('\n')
+    print(estado.flatten_state().shape)
+    print('\n')
+
 
 # Función para convertir teclas en acciones
 def get_action_from_key(key):

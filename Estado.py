@@ -1,5 +1,5 @@
-from utiles import *
-from mapa import *
+from Utiles import *
+from Mapa import *
 import numpy as np
 
 class Estado:
@@ -43,6 +43,10 @@ class Estado:
                 next_posicion = self.posicion_jugador + self.get_orientation_offset()
                 self.mapa.set_cell(next_posicion, CellType.FREE)
         
+        # Matar al jugador si se supera el límite de acciones
+        if(self.steps>=500):
+            self.alive = False
+        
         # siempre devolvemos self modifificado para hacer un uso de memoria eficiente
         return self            
 
@@ -71,13 +75,13 @@ class Estado:
     
     def is_win(self, task):
         if task == Task.FIND_KEY:
-            return self.tiene_llave
+            return self.tiene_llave and self.alive
         
         elif task == Task.FIND_DOOR:
             return self.is_goal()
         
         elif task == Task.KILL_ENEMIES:
-            return self.mapa.get_enemies() == 0
+            return self.mapa.get_enemies() == 0  and self.alive
         
         elif task == Task.ZELDA:
             return (self.tiene_llave and
@@ -89,7 +93,33 @@ class Estado:
                        self.mapa.get_enemies() == 0)
 
     def is_goal(self):
-        return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR
+        return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR  and self.alive
+    
+    def flatten_state(self):
+        # Flatten the map
+        flattened_map = self.mapa.flatten_map()
+
+        # Convert position to a flat array (already flat)
+        flat_pos = self.posicion_jugador
+        
+        # Convert orientation, steps, tiene_llave, and alive to an array
+        other_info = np.array([
+            self.orientacion_jugador,
+            self.steps,
+            self.tiene_llave,
+            self.alive
+        ])
+        
+        # Concatenate all parts into one vector
+        return np.concatenate((flattened_map, flat_pos, other_info))
+    
+    def get_reward(self, task):
+        if self.is_win(task):
+            return 1
+        elif not self.alive:
+            return -1
+        else:
+            return 0
 
     def __key(self):
         return (self.posicion_jugador, self.orientacion_jugador, self.steps, self.tiene_llave, self.alive)

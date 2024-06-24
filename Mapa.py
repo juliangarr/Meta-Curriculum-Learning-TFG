@@ -1,4 +1,5 @@
-from utiles import *
+from Utiles import *
+import numpy as np
 
 class Mapa:
     def __init__(self, filename):
@@ -7,7 +8,7 @@ class Mapa:
         self.cols = len(self.mapa[0])
 
     def read_map(self, filename):
-        ruta = 'Mapas/'+filename
+        ruta = 'Mapas/' + filename
         
         # Abrir el archivo y leer el contenido
         with open(ruta, 'r') as archivo:
@@ -54,3 +55,6 @@ class Mapa:
     '''
     def set_cell(self, position, cell_type):
         self.mapa[position[0]][position[1]] = int(cell_type)
+
+    def flatten_map(self):
+        return np.array(self.mapa).flatten()
