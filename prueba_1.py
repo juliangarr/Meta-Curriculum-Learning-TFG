@@ -33,7 +33,7 @@ model = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5).mo
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
 # Crear la instancia de Reptile
-reptile = Reptile("prueba_simple_2", model, optimizer, tasks, initial_states, num_meta_iters=1, num_episodes_per_task=5, alpha=0.001, gamma=0.95)
+reptile = Reptile("prueba_1", model, optimizer, tasks, initial_states, num_meta_iters=5, num_episodes_per_task=1000, alpha=0.001, gamma=0.95)
 
 # Entrenar el modelo
 reptile.train_Reptile()
@@ -44,3 +44,4 @@ initial_eval = Estado(mapa_eval, (4,5), 0, 0, 0, True)
 
 # Evaluar una tarea
 reptile.evaluate_task(Task.FIND_KEY, initial_eval)
+

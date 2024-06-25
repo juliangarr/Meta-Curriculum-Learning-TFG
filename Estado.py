@@ -104,11 +104,19 @@ class Estado:
         
         # Convert orientation, steps, tiene_llave, and alive to an array
         other_info = np.array([
-            self.orientacion_jugador,
-            self.steps,
-            self.tiene_llave,
-            self.alive
+            int(self.orientacion_jugador),
+            int(self.steps),
+            int(self.tiene_llave),
+            int(self.alive)
         ])
+        '''
+        other_info = np.array([
+            int(self.orientacion_jugador),
+            int(self.steps),
+            int(self.tiene_llave),
+            int(self.alive)
+        ], dtype=np.int64)
+        '''
         
         # Concatenate all parts into one vector
         return np.concatenate((flattened_map, flat_pos, other_info))

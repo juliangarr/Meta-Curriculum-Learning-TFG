@@ -5,6 +5,7 @@ import copy
 import os
 import csv
 from datetime import datetime
+import sys
 
 # Definir el modelo y el entorno
 class Reptile:
@@ -36,13 +37,15 @@ class Reptile:
         }
         
         for episode in range(num_episodes):
-            estado = estado_inicial
+            #estado = estado_inicial
+            estado = copy.deepcopy(estado_inicial)
             done = False
             
             while not done:
                 # Obtener la acción del modelo actual
                 estado_actual = estado.flatten_state()
-                acciones_probabilidades = self.model.predict(np.array([estado_actual]))
+                #acciones_probabilidades = self.model.predict(np.array([estado_actual]))
+                acciones_probabilidades = self.silent_predict(self.model, np.array([estado_actual]))
                 accion_elegida = np.argmax(acciones_probabilidades)
                 
                 # Aplicar la acción al entorno
@@ -51,9 +54,25 @@ class Reptile:
                 
                 # Actualizar el modelo basado en la recompensa obtenida
                 with tf.GradientTape() as tape:
+                    '''
                     target = reward + gamma * np.max(self.model.predict(np.array([nuevo_estado.flatten_state()])))
                     predicted = self.model(np.array([estado_actual]))
-                    loss = tf.keras.losses.MeanSquaredError(target, predicted)
+                    OJO
+                    print("Target: ", target.shape)
+                    print("Predicted: ", predicted.shape)
+                    '''
+                    estado_actual_tensor = tf.convert_to_tensor([estado_actual], dtype=tf.float32)
+                    nuevo_estado_tensor = tf.convert_to_tensor([nuevo_estado.flatten_state()], dtype=tf.float32)
+                    #target = reward + gamma * np.max(self.model.predict(nuevo_estado_tensor))
+                    target = reward + gamma * np.max(self.silent_predict(self.model, nuevo_estado_tensor))
+                    predicted = self.model(estado_actual_tensor)
+                    
+                    # Ajusta target para que tenga la misma forma que predicted
+                    target_tensor = tf.convert_to_tensor([[target] * predicted.shape[-1]], dtype=tf.float32)
+                    #print("Target: ", target_tensor.shape)
+                    #print("Predicted: ", predicted.shape)
+
+                    loss = tf.keras.losses.MeanSquaredError()(target_tensor, predicted)
                 
                 gradients = tape.gradient(loss, self.model.trainable_variables)
                 self.optimizer.apply_gradients(zip(gradients, self.model.trainable_variables))
@@ -116,7 +135,8 @@ class Reptile:
         while not done:
             # Obtener la acción del modelo actual
             estado_actual = estado.flatten_state()
-            acciones_probabilidades = self.model.predict(np.array([estado_actual]))
+            #acciones_probabilidades = self.model.predict(np.array([estado_actual]))
+            acciones_probabilidades = self.silent_predict(self.model, np.array([estado_actual]))
             accion_elegida = np.argmax(acciones_probabilidades)
             
             # Aplicar la acción al entorno
@@ -143,70 +163,78 @@ class Reptile:
         # Imprimir en CSV el resultado de la evaluación
         self.print_Eval_to_csv(evaluation_result)
 
-def save_model(self):
+    def save_model(self):
         directory = "TRAINED_MODELS"
         if not os.path.exists(directory):
             os.makedirs(directory)
         filepath = os.path.join(directory, self.name + ".h5")
         self.model.save(filepath)
 
-def load_model(self, filename):
-    directory = "TRAINED_MODELS"
-    filepath = os.path.join(directory, filename)
-    self.model = tf.keras.models.load_model(filepath)
+    def load_model(self, filename):
+        directory = "TRAINED_MODELS"
+        filepath = os.path.join(directory, filename)
+        self.model = tf.keras.models.load_model(filepath)
 
-def print_Train_to_csv(self):
-    filename = f"TRAIN_results/{self.name}.csv"
-    if not os.path.exists("TRAIN_results"):
-        os.makedirs("TRAIN_results")
-    
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([
-            "Parameter", "Value"
-        ])
-        writer.writerow(["Learning rate (alpha)", self.learning_rate])
-        writer.writerow(["Discount factor (gamma)", self.discount_factor])
-        writer.writerow(["Number of meta iterations", self.meta_iterations])
-        writer.writerow(["Number of tasks", self.num_tasks])
-        writer.writerow(["Number of episodes per task", self.num_episodes_per_task])
-        writer.writerow([])
-        writer.writerow([])
-        writer.writerow([])
-
-        for task_data in self.history:
-            writer.writerow(["Task name", task_data["task_name"]])
-            writer.writerow(["Initial state", task_data["initial_state"]])
-            writer.writerow(["Number of successes", task_data["successes"]])
-            writer.writerow(["Number of failures", task_data["failures"]])
-            writer.writerow([])
-
+    def print_Train_to_csv(self):
+        filename = f"TRAIN_results/{self.name}.csv"
+        if not os.path.exists("TRAIN_results"):
+            os.makedirs("TRAIN_results")
+        
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
             writer.writerow([
-                "Episode index", "Steps", "Result"
+                "Parameter", "Value"
             ])
-            for episode in task_data["episodes"]:
-                writer.writerow([
-                    episode["episode_index"],
-                    episode["steps"],
-                    episode["result"]
-                ])
-            writer.writerow([])  # Blank line between tasks
+            writer.writerow(["Learning rate (alpha)", self.learning_rate])
+            writer.writerow(["Discount factor (gamma)", self.discount_factor])
+            writer.writerow(["Number of meta iterations", self.meta_iterations])
+            writer.writerow(["Number of tasks", self.num_tasks])
+            writer.writerow(["Number of episodes per task", self.num_episodes_per_task])
+            writer.writerow([])
             writer.writerow([])
             writer.writerow([])
 
-def print_Eval_to_csv(self, evaluation_result):
-    filename = f"EVALUATION_results/eval_{self.name}.csv"
-    if not os.path.exists("EVALUATION_results"):
-        os.makedirs("EVALUATION_results")
-    
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([
-            "Model Name", "Task Name", "Steps", "Result"
-        ])
-        writer.writerow([
-            evaluation_result["model_name"],
-            evaluation_result["task_name"],
-            evaluation_result["steps"],
-            evaluation_result["result"]
-        ])
+            for task_data in self.history:
+                writer.writerow(["Task name", task_data["task_name"]])
+                writer.writerow(["Initial state", task_data["initial_state"]])
+                writer.writerow(["Number of successes", task_data["successes"]])
+                writer.writerow(["Number of failures", task_data["failures"]])
+                writer.writerow([])
+
+                writer.writerow([
+                    "Episode index", "Steps", "Result"
+                ])
+                for episode in task_data["episodes"]:
+                    writer.writerow([
+                        episode["episode_index"],
+                        episode["steps"],
+                        episode["result"]
+                    ])
+                writer.writerow([])  # Blank line between tasks
+                writer.writerow([])
+                writer.writerow([])
+
+    def print_Eval_to_csv(self, evaluation_result):
+        filename = f"EVALUATION_results/eval_{self.name}.csv"
+        if not os.path.exists("EVALUATION_results"):
+            os.makedirs("EVALUATION_results")
+        
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                "Model Name", "Task Name", "Steps", "Result"
+            ])
+            writer.writerow([
+                evaluation_result["model_name"],
+                evaluation_result["task_name"],
+                evaluation_result["steps"],
+                evaluation_result["result"]
+            ])
+
+    def silent_predict(self, model, data):
+        original_stdout = sys.stdout  # Save a reference to the original standard output
+        sys.stdout = open(os.devnull, 'w')  # Redirect standard output to devnull
+        result = model.predict(data)
+        sys.stdout.close()
+        sys.stdout = original_stdout  # Reset the standard output to its original value
+        return result
