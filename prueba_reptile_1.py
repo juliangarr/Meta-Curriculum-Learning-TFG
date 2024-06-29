@@ -29,7 +29,8 @@ for estado in initial_states:
 '''
 
 # Crear el modelo y el optimizador
-model = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5).model
+cnn = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5)
+model = cnn.model
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
 # Crear la instancia de Reptile

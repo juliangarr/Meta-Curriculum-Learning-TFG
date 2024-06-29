@@ -12,6 +12,10 @@ class SimpleNetwork:
                     tf.keras.layers.Dense(units=32, activation='relu'),
                     tf.keras.layers.Dense(units=self.num_actions, activation='softmax')
         ])
+
+        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+                      loss=tf.keras.losses.MeanSquaredError(),
+                      metrics=['accuracy'])
         
         return model
     '''

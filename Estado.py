@@ -118,8 +118,8 @@ class Estado:
         ], dtype=np.int64)
         '''
         
-        # Concatenate all parts into one vector
-        return np.concatenate((flattened_map, flat_pos, other_info))
+        # Concatenate all parts into one vector and normalize vector
+        return np.concatenate((flattened_map, flat_pos, other_info)) / 4.0
     
     def get_reward(self, task):
         if self.is_win(task):

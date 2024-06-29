@@ -9,7 +9,7 @@ import sys
 
 # Definir el modelo y el entorno
 class Reptile:
-    def __init__(self, name, model, optimizer, tasks, task_initial_states, num_meta_iters, num_episodes_per_task = 1000, alpha = 0.001, gamma=0.95):
+    def __init__(self, name, model, optimizer, tasks, task_initial_states, num_meta_iters = 1, num_episodes_per_task = 1000, alpha = 0.001, gamma=0.95):
         # SET NAME
         now = datetime.now()
         timestamp = now.strftime("%m_%d_%H_%M")
@@ -54,13 +54,6 @@ class Reptile:
                 
                 # Actualizar el modelo basado en la recompensa obtenida
                 with tf.GradientTape() as tape:
-                    '''
-                    target = reward + gamma * np.max(self.model.predict(np.array([nuevo_estado.flatten_state()])))
-                    predicted = self.model(np.array([estado_actual]))
-                    OJO
-                    print("Target: ", target.shape)
-                    print("Predicted: ", predicted.shape)
-                    '''
                     estado_actual_tensor = tf.convert_to_tensor([estado_actual], dtype=tf.float32)
                     nuevo_estado_tensor = tf.convert_to_tensor([nuevo_estado.flatten_state()], dtype=tf.float32)
                     #target = reward + gamma * np.max(self.model.predict(nuevo_estado_tensor))
@@ -101,6 +94,7 @@ class Reptile:
     def train_Reptile(self):
         alpha = self.learning_rate
         meta_iterations = self.meta_iterations
+
         # Obtener los parámetros iniciales del modelo
         meta_parameters = self.model.get_weights()
 
@@ -129,7 +123,7 @@ class Reptile:
         self.print_Train_to_csv()
 
     def evaluate_task(self, e_task, e_state):
-        estado = e_state
+        estado = copy.deepcopy(e_state)
         done = False
         
         while not done:
@@ -156,9 +150,9 @@ class Reptile:
 
         # Mostrar resultado
         if  estado.is_win(e_task):
-            print("Success on task!")
+            print("Success on task " + self.name + " - " + e_task.name + "------   KKKKKKK  1")
         else:
-            print("Failed to complete task.")
+            print("Failed to complete task " + self.name + " - " + e_task.name + "------     -1")
 
         # Imprimir en CSV el resultado de la evaluación
         self.print_Eval_to_csv(evaluation_result)
@@ -167,18 +161,20 @@ class Reptile:
         directory = "TRAINED_MODELS"
         if not os.path.exists(directory):
             os.makedirs(directory)
-        filepath = os.path.join(directory, self.name + ".h5")
+        filepath = os.path.join(directory, self.name + ".keras")
         self.model.save(filepath)
 
     def load_model(self, filename):
         directory = "TRAINED_MODELS"
+        if not filename.endswith('.keras'):
+            filename += '.keras'
         filepath = os.path.join(directory, filename)
         self.model = tf.keras.models.load_model(filepath)
 
     def print_Train_to_csv(self):
-        filename = f"TRAIN_results/{self.name}.csv"
-        if not os.path.exists("TRAIN_results"):
-            os.makedirs("TRAIN_results")
+        filename = f"results_TRAIN/{self.name}.csv"
+        if not os.path.exists("results_TRAIN"):
+            os.makedirs("results_TRAIN")
         
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -215,9 +211,10 @@ class Reptile:
                 writer.writerow([])
 
     def print_Eval_to_csv(self, evaluation_result):
-        filename = f"EVALUATION_results/eval_{self.name}.csv"
-        if not os.path.exists("EVALUATION_results"):
-            os.makedirs("EVALUATION_results")
+        task_name = evaluation_result["task_name"]
+        filename = f"results_EVAL/eval_{self.name}_{task_name}.csv"
+        if not os.path.exists("results_EVAL"):
+            os.makedirs("results_EVAL")
         
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
