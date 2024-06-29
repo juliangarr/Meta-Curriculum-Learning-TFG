@@ -2,7 +2,7 @@
 
 # print(tf.__version__)
 # print(tf.config.list_physical_devices('GPU'))
-
+'''
 import timeit
 
 # Definir las operaciones
@@ -23,3 +23,15 @@ if tiempo_multiplicacion < tiempo_division:
     print("La multiplicación es más rápida")
 else:
     print("La división es más rápida")
+    '''
+
+import numpy as np
+
+# Ejemplo de normalización por la norma L2 para las posiciones del jugador
+posicion_jugador = np.array([5, 7])  # Ejemplo de posición del jugador
+
+norma = np.linalg.norm(posicion_jugador)  # Calculamos la norma L2 del vector
+
+posicion_jugador_norm = posicion_jugador / norma
+
+print("Posición del jugador normalizada (norma L2):", posicion_jugador_norm)

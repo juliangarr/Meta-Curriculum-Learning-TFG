@@ -21,10 +21,9 @@ class Task(IntEnum):
     KILL_ENEMIES = 2
     ZELDA = 3
     ALL = 4
-'''
+
 class Direction(IntEnum):
     UP = 0
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-'''

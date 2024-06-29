@@ -1,7 +1,6 @@
 from Utiles import *
 from Mapa import *
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder
 
 class Estado:
 
@@ -12,26 +11,10 @@ class Estado:
         self.steps = pasos_jugador
         self.tiene_llave = llave_jugador
         self.alive = vivo_jugador
-
-        # Definimos las categorías del mapa y orientaciones
-        self.categorias_mapa = [CellType.FREE, CellType.WALL,  CellType.ENEMY, CellType.KEY, CellType.DOOR]
-        self.categorias_orientacion = [Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT]
-        
-        # Creamos los OneHotEncoders
-        self.map_encoder = OneHotEncoder(categories=[self.categorias_mapa])
-        self.orientation_encoder = OneHotEncoder(categories=[self.categorias_orientacion])
-        
-        # Ajustamos los encoders con las categorías
-        self.map_encoder.fit(np.array(self.categorias_mapa).reshape(-1, 1))
-        self.orientation_encoder.fit(np.array(self.categorias_orientacion).reshape(-1, 1))
-        
-        # Inicializamos la representación plana del estado
-        self.estado_flat = self.flatten_state()
-        #self._update_state_dict()
     
     def apply_action(self, next_action):
         # Aumentamos en 1 el numero de acciones totales empleadas
-        self.steps += 1.0/100.0
+        self.steps += 1
         
         if next_action == Action.FORWARD:
             # Modificaciones según nueva posición (antes de cambiar la posicion)
@@ -47,10 +30,10 @@ class Estado:
             self.posicion_jugador = self.get_next_player_position()
 
         elif next_action == Action.TURN_LEFT:
-            self.orientacion_jugador = (self.orientacion_jugador + Direction.LEFT) % 4
+            self.orientacion_jugador = (self.orientacion_jugador +3) % 4
         
         elif next_action == Action.TURN_RIGHT:
-            self.orientacion_jugador = (self.orientacion_jugador + Direction.RIGHT) % 4
+            self.orientacion_jugador = (self.orientacion_jugador +1) % 4
         
         elif next_action == Action.ATACK:
             celda_atacada = self.get_forward_cell_type()
@@ -61,7 +44,7 @@ class Estado:
                 self.mapa.set_cell(next_posicion, CellType.FREE)
         
         # Matar al jugador si se supera el límite de acciones
-        if(self.steps>=1.0):
+        if(self.steps>=500):
             self.alive = False
         
         # siempre devolvemos self modifificado para hacer un uso de memoria eficiente
@@ -113,25 +96,30 @@ class Estado:
         return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR  and self.alive
     
     def flatten_state(self):
-        # Convertir el mapa en una representación one-hot
-        mapa_flat = self.map_encoder.transform(np.array(self.mapa.mapa).reshape(-1, 1)).toarray().flatten()
-        
-        # Convertir la orientación en una representación one-hot
-        one_hot_orientacion = self.orientation_encoder.transform(np.array([[self.orientacion_jugador]])).toarray().flatten()
-        
-        pos_x, pos_y = self.posicion_jugador/np.linalg.norm(self.posicion_jugador)
+        # Flatten the map
+        flattened_map = self.mapa.flatten_map()
 
-        # Crear el vector de estado completo
-        estado_flat = np.concatenate([
-            mapa_flat, 
-            one_hot_orientacion, 
-            np.array([pos_x, pos_y]),
-            [self.steps], 
-            [int(self.tiene_llave)], 
-            [int(self.alive)]
-        ])
+        # Convert position to a flat array (already flat)
+        flat_pos = self.posicion_jugador
         
-        return estado_flat
+        # Convert orientation, steps, tiene_llave, and alive to an array
+        other_info = np.array([
+            int(self.orientacion_jugador),
+            int(self.steps),
+            int(self.tiene_llave),
+            int(self.alive)
+        ])
+        '''
+        other_info = np.array([
+            int(self.orientacion_jugador),
+            int(self.steps),
+            int(self.tiene_llave),
+            int(self.alive)
+        ], dtype=np.int64)
+        '''
+        
+        # Concatenate all parts into one vector and normalize vector
+        return np.concatenate((flattened_map, flat_pos, other_info)) / 4.0
     
     def get_reward(self, task):
         if self.is_win(task):

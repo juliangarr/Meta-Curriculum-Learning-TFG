@@ -12,7 +12,7 @@ mapa = Mapa('zelda_lvl0.txt')
 # Posición inicial del jugador y orientación (por ejemplo, arriba (0))
 posicion_jugador = (1, 1)  # Cambia esta posición según el mapa
 orientacion_jugador = 0  # 0: UP, 1: RIGHT, 2: DOWN, 3: LEFT
-pasos_jugador = 0
+pasos_jugador = 0.0
 llave_jugador = False
 vivo_jugador = True
 
