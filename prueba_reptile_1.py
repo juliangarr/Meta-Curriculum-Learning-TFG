@@ -6,7 +6,7 @@ from Utiles import *
 
 # Definimos las tareas y sus mapas asociados
 tasks = [Task.FIND_KEY, Task.FIND_DOOR, Task.KILL_ENEMIES]
-map_files = ['find_key_0.txt', 'find_door_0.txt', 'kill_enemies_0.txt']
+map_files = ['find_key_0.txt', 'find_door_0.txt', 'find_enemies_0.txt']
 
 # Definir para cada par tarea-map su estado inicial
 initial_states = []
@@ -29,19 +29,19 @@ for estado in initial_states:
 '''
 
 # Crear el modelo y el optimizador
-cnn = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5)
+cnn = SimpleNetwork(input_shape=(filas_map * cols_map * 5 + 4 + 5,), num_actions=4)
 model = cnn.model
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
 # Crear la instancia de Reptile
-reptile = Reptile("prueba_simple_2", model, optimizer, tasks, initial_states, num_meta_iters=1, num_episodes_per_task=5, alpha=0.001, gamma=0.95)
+reptile = Reptile("prueba_simple_3", model, optimizer, tasks, initial_states, num_meta_iters=1, num_episodes_per_task=2, alpha=0.001, gamma=0.95)
 
 # Entrenar el modelo
 reptile.train_Reptile()
 
 # Definimos el mapa y la tarea de evaluación
 mapa_eval = Mapa('eval_key_0.txt')
-initial_eval = Estado(mapa_eval, (4,5), 0, 0, 0, True)
+initial_eval = Estado(mapa_eval, (4,5), 0, 0, False, True)
 
 # Evaluar una tarea
 reptile.evaluate_task(Task.FIND_KEY, initial_eval)

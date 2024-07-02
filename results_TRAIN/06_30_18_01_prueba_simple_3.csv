@@ -1,0 +1,42 @@
+Parameter,Value
+Learning rate (alpha),0.001
+Discount factor (gamma),0.95
+Number of meta iterations,1
+Number of tasks,3
+Number of episodes per task,2
+
+
+
+Task name,FIND_KEY
+Initial state,find_key_0.txt
+Number of successes,0
+Number of failures,2
+
+Episode index,Steps,Result,Total reward
+0,1.0000000000000007,-1,-85.23000000000003
+1,1.0000000000000007,-1,-62.93000000000003
+
+
+
+Task name,FIND_DOOR
+Initial state,find_door_0.txt
+Number of successes,0
+Number of failures,2
+
+Episode index,Steps,Result,Total reward
+0,1.0000000000000007,-1,-87.61000000000003
+1,1.0000000000000007,-1,-62.49000000000003
+
+
+
+Task name,KILL_ENEMIES
+Initial state,find_enemies_0.txt
+Number of successes,0
+Number of failures,2
+
+Episode index,Steps,Result,Total reward
+0,0.9900000000000007,-1,-154.31
+1,1.0000000000000007,-1,-50.50000000000003
+
+
+

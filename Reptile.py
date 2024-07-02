@@ -30,7 +30,8 @@ class Reptile:
     def train_one_task(self, task, estado_inicial, num_episodes, gamma):
         task_history = {
             "task_name": task.name,
-            "initial_state": estado_inicial.flatten_state().tolist(),
+            #"initial_state": estado_inicial.flatten_state().tolist(),
+            "initial_state": estado_inicial.mapa.name,
             "successes": 0,
             "failures": 0,
             "episodes": []
@@ -40,35 +41,47 @@ class Reptile:
             #estado = estado_inicial
             estado = copy.deepcopy(estado_inicial)
             done = False
+            total_reward = 0
             
             while not done:
                 # Obtener la acción del modelo actual
                 estado_actual = estado.flatten_state()
-                #acciones_probabilidades = self.model.predict(np.array([estado_actual]))
-                acciones_probabilidades = self.silent_predict(self.model, np.array([estado_actual]))
-                accion_elegida = np.argmax(acciones_probabilidades)
+                
+                # Obtener las probabilidades de las acciones del modelo
+                acciones_probabilidades = self.model.predict(np.array([estado_actual]))
+                #acciones_probabilidades = self.silent_predict(self.model, np.array([estado_actual]))
+                accion_elegida = np.argmax(acciones_probabilidades) # seleccionar el índice de la acción con mayor probabilidad
                 
                 # Aplicar la acción al entorno
                 nuevo_estado = estado.apply_action(accion_elegida)
                 reward = nuevo_estado.get_reward(task)
+                total_reward += reward
                 
                 # Actualizar el modelo basado en la recompensa obtenida
                 with tf.GradientTape() as tape:
                     estado_actual_tensor = tf.convert_to_tensor([estado_actual], dtype=tf.float32)
                     nuevo_estado_tensor = tf.convert_to_tensor([nuevo_estado.flatten_state()], dtype=tf.float32)
-                    #target = reward + gamma * np.max(self.model.predict(nuevo_estado_tensor))
-                    target = reward + gamma * np.max(self.silent_predict(self.model, nuevo_estado_tensor))
+                    
+                    q_values_actuales = self.model(estado_actual_tensor)
+                    q_values_siguientes = self.model(nuevo_estado_tensor)
+
+                    target_q = reward + gamma * np.max(q_values_siguientes)
+                    target_q_values = q_values_actuales.numpy()
+                    target_q_values[0][accion_elegida] = target_q
+                    '''
+                    target = reward + gamma * np.max(self.model.predict(nuevo_estado_tensor))
+                    #target = reward + gamma * np.max(self.silent_predict(self.model, nuevo_estado_tensor))
                     predicted = self.model(estado_actual_tensor)
                     
                     # Ajusta target para que tenga la misma forma que predicted
                     target_tensor = tf.convert_to_tensor([[target] * predicted.shape[-1]], dtype=tf.float32)
                     #print("Target: ", target_tensor.shape)
                     #print("Predicted: ", predicted.shape)
-
-                    loss = tf.keras.losses.MeanSquaredError()(target_tensor, predicted)
+                    '''
+                    loss = tf.keras.losses.MeanSquaredError()(target_q_values, q_values_actuales)
                 
                 gradients = tape.gradient(loss, self.model.trainable_variables)
-                self.optimizer.apply_gradients(zip(gradients, self.model.trainable_variables))
+                self.model.optimizer.apply_gradients(zip(gradients, self.model.trainable_variables))
                 
                 estado = nuevo_estado
                 done = estado.is_win(task) or not estado.alive
@@ -84,7 +97,8 @@ class Reptile:
             episode_history = {
                 "episode_index": episode,
                 "steps": estado.steps,  # Asumiendo que steps es un atributo de estado
-                "result": result
+                "result": result,
+                "total_reward": total_reward
             }
             task_history["episodes"].append(episode_history)
 
@@ -198,13 +212,14 @@ class Reptile:
                 writer.writerow([])
 
                 writer.writerow([
-                    "Episode index", "Steps", "Result"
+                    "Episode index", "Steps", "Result", "Total reward"
                 ])
                 for episode in task_data["episodes"]:
                     writer.writerow([
                         episode["episode_index"],
                         episode["steps"],
-                        episode["result"]
+                        episode["result"],
+                        episode["total_reward"]
                     ])
                 writer.writerow([])  # Blank line between tasks
                 writer.writerow([])
@@ -235,3 +250,15 @@ class Reptile:
         sys.stdout.close()
         sys.stdout = original_stdout  # Reset the standard output to its original value
         return result
+    
+    '''
+    def silent_predict(self, model, data):
+        with open(os.devnull, 'w') as fnull:
+            original_stdout = sys.stdout
+            sys.stdout = fnull
+            try:
+                result = model.predict(data)
+            finally:
+                sys.stdout = original_stdout
+        return result
+    '''

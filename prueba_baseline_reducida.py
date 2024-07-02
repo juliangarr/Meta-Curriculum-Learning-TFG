@@ -48,13 +48,13 @@ seed = 42
 set_seed(seed)
 
 # Crear el modelo y el optimizador
-model_simple = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5).model
+model_simple = SimpleNetwork(input_shape=(filas_map * cols_map * 5 + 4 + 5,), num_actions=4).model
 optimizer_simple = tf.keras.optimizers.Adam(learning_rate=0.001)
 
 # Fijar la semilla de nuevo
 set_seed(seed)
 
-model_complex = SimpleNetwork(input_shape=(filas_map * cols_map + 6,), num_actions=5).model
+model_complex = SimpleNetwork(input_shape=(filas_map * cols_map * 5 + 4 + 5,), num_actions=4).model
 optimizer_complex = tf.keras.optimizers.Adam(learning_rate=0.001)
 
 '''
@@ -67,10 +67,10 @@ for layer1, layer2 in zip(model_simple.layers, model_complex.layers):
 '''
 
 # Crear la instancia de Reptile - SIMPLE
-reptile_simple = Reptile("reducido_Simple", model_simple, optimizer_simple, tasks_simple, initial_states, num_meta_iters=1, num_episodes_per_task=50, alpha=0.001, gamma=0.95)
+reptile_simple = Reptile("reducido_Simple", model_simple, optimizer_simple, tasks_simple, initial_states, num_meta_iters=1, num_episodes_per_task=500, alpha=0.001, gamma=0.95)
 
 # Crear la instancia de Reptile - COMPLEJO
-reptile_complex = Reptile("reducido_Complex", model_complex, optimizer_complex, task_complex, inicial_complex, num_meta_iters=1, num_episodes_per_task=50, alpha=0.001, gamma=0.95)
+reptile_complex = Reptile("reducido_Complex", model_complex, optimizer_complex, task_complex, inicial_complex, num_meta_iters=1, num_episodes_per_task=500, alpha=0.001, gamma=0.95)
 
 # Crear la instancia de Reptile - COMPLEJO
 #reptile_complex = Reptile("baseline_Complex", model_complex, optimizer_complex, task_complex, inicial_complex, num_meta_iters=1, num_episodes_per_task=150, alpha=0.001, gamma=0.95)

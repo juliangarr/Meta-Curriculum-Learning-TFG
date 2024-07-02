@@ -33,10 +33,20 @@ def print_estado(estado):
     print(f"Pasos del jugador: {estado.steps}")
     print(f"Jugador tiene llave: {estado.tiene_llave}")
     print(f"Jugador está vivo: {estado.alive}")
+
     print('\n')
-    print(estado.flatten_state())
+    print(f"Colisión: {estado.colision}")
+    print(f"Consigue llave: {estado.consigue_llave}")
+    print(f"Elimina enemigo: {estado.elimina_enemigo}")
+    print(f"Nueva casilla: {estado.nueva_casilla}")
     print('\n')
-    print(estado.flatten_state().shape)
+    print(f"Memoria: \n")
+    print(estado.memoria)
+
+    #print('\n')
+    #print(estado.flatten_state())
+    print('\n')
+    #print(estado.flatten_state().shape)
     print('\n')
 
 
@@ -50,8 +60,8 @@ def get_action_from_key(key):
         return Action.TURN_RIGHT
     elif key == 'p':
         return Action.ATACK
-    else:
-        return Action.IDLE
+    #else:
+    #    return Action.IDLE
 
 # Bucle principal del juego
 while estado.alive and not estado.is_win(Task.ZELDA):

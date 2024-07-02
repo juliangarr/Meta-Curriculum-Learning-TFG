@@ -1,11 +1,11 @@
 from enum import IntEnum
 
 class Action(IntEnum):
-    IDLE = 0
-    FORWARD = 1
-    TURN_LEFT = 2
-    TURN_RIGHT = 3
-    ATACK = 4
+    #IDLE = 0
+    FORWARD = 0
+    TURN_LEFT = 1
+    TURN_RIGHT = 2
+    ATACK = 3
 
 class CellType(IntEnum):
     FREE = 0
