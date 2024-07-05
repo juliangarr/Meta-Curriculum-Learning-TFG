@@ -15,4 +15,6 @@ python cl_R_Beta.py
 
 python upperbound.py
 
+python zelda_simple.py
+
 

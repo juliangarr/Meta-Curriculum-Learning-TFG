@@ -27,7 +27,7 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
 
             episodes = 10
             writer.writerow([f"Mapa {i}: {level_files[i]}"])
-            writer.writerow(["Episodio", "TotalReward"])
+            writer.writerow(["Episodio", "TotalReward", "Pasos"])
 
             for ep in range(episodes):
                 obs, _ = env.reset()    # Extraer solo la observación
@@ -38,6 +38,6 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
 
                 #print(f"Episodio {ep+1} completado por tarea {i}.")
                 #print(f"Recompensa total: {env.total_reward}")
-                writer.writerow([ep+1, env.total_reward])
+                writer.writerow([ep+1, env.total_reward, env.pasos])
             
             writer.writerow([])

@@ -10,17 +10,17 @@ import csv
 # Establecer la semilla
 SEED = 42
 
-models_directories = ["MODELS_SIMPLE/KEY_R_BETA", "MODELS_SIMPLE/DOOR_R_BETA", "MODELS_SIMPLE/ENEMIES_R_BETA"]
-logs_directories    = ["LOGS_SIMPLE/logs_KEY_R_BETA", "LOGS_SIMPLE/logs_DOOR_R_BETA", "LOGS_SIMPLE/logs_ENEMIES_R_BETA"]
+models_directories = ["MODELS_SIMPLE/R_BETA_KEY", "MODELS_SIMPLE/R_BETA_DOOR", "MODELS_SIMPLE/R_BETA_ENEMIES"]
+#logs_directories    = ["LOGS_SIMPLE/KEY_R_BETA", "LOGS_SIMPLE/DOOR_R_BETA", "LOGS_SIMPLE/ENEMIES_R_BETA"]
 csv_dir = "CSV"
-
+'''
 for models_dir, logs_dir in zip(models_directories, logs_directories):
     if not os.path.exists(models_dir):
         os.makedirs(models_dir)
 
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
-
+'''
 if not os.path.exists(csv_dir):
     os.makedirs(csv_dir)
 
@@ -36,13 +36,15 @@ posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 TIMESTEPS = 100000
 ALPHA = 0.1          # Tasa de aprendizaje para la actualización de Reptile
 
+logs_dir_inicial = "LOGS_SIMPLE"
+
 # Inicializar el entorno y el modelo
 mapa_inicial = Mapa("key_0.txt")
 env = ZeldaEnv(mapa_inicial, Task.FIND_KEY, pos_jugador=posiciones[0])
-model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir}", seed=SEED)
+model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir_inicial}", seed=SEED)
 
 # Para cada tarea entrenar todos los mapas
-for task, lvl_name, models_dir, logs_dir in zip(tasks, lvl_names, models_directories, logs_directories):
+for task, lvl_name, models_dir in zip(tasks, lvl_names, models_directories):
     # Listado de archivos de niveles
     level_files = [f"{lvl_name}_0.txt", f"{lvl_name}_1.txt", f"{lvl_name}_2.txt", f"{lvl_name}_3.txt", f"{lvl_name}_4.txt"]
 
@@ -57,7 +59,7 @@ for task, lvl_name, models_dir, logs_dir in zip(tasks, lvl_names, models_directo
         # Coger los parámetros iniciales
         old_params = copy.deepcopy(model.policy.state_dict())
 
-        model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"{task.name}_{i}")
+        model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"R_BETA_{task.name}")
         
         # Extrar los nuevos parámetros después de entrenar en una tarea
         new_params = copy.deepcopy(model.policy.state_dict())
@@ -70,6 +72,10 @@ for task, lvl_name, models_dir, logs_dir in zip(tasks, lvl_names, models_directo
         model.policy.load_state_dict(old_params)   
 
         model.save(f"{models_dir}/model_{i}")
+
+
+if not os.path.exists("MODELS_SIMPLE/simple_r_beta"):
+    os.makedirs("MODELS_SIMPLE/simple_r_beta")
 
 model.save("MODELS_SIMPLE/simple_r_beta/model_final")
 

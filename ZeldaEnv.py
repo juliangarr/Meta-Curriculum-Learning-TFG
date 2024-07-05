@@ -39,10 +39,12 @@ class ZeldaEnv(gym.Env):
 
         # Inicializar la recompensa total
         self.total_reward = 0
+        self.pasos = self.state.steps
 
     def reset(self, seed=None):
         #super().reset(seed=seed)
         self.total_reward = 0
+        self.pasos = 0
 
         # Reiniciar el mapa y el estado del jugador
         self.mapa.mapa = self.mapa_inicial.mapa.copy()
@@ -56,6 +58,7 @@ class ZeldaEnv(gym.Env):
         # Calcular recompensa
         reward = self.state.get_reward(self.task)
         self.total_reward += reward
+        self.pasos += 1
 
         done = self.state.done or self.state.is_win(self.task)
         obs = self._get_observation()
