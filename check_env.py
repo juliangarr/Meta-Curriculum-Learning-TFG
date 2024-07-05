@@ -5,7 +5,7 @@ from Estado import *
 from Utiles import *
 
 # Crear una instancia del mapa (usando un archivo de mapa específico, ajusta según sea necesario)
-mapa = Mapa('find_key_0.txt')  # Ajusta el nombre del archivo según tu caso
+mapa = Mapa('key_0.txt')  # Ajusta el nombre del archivo según tu caso
 
 # Crear una instancia del entorno
 env = ZeldaEnv(mapa=mapa, task=Task.ZELDA, pos_jugador=[1, 1], orientacion_jugador=0, llave_jugador=False)

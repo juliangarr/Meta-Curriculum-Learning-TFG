@@ -5,14 +5,15 @@ from sklearn.preprocessing import OneHotEncoder
 
 class Estado:
 
-    def __init__(self, mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador = True):
+    def __init__(self, mapa, posicion_jugador, orientacion_jugador=1, pasos_jugador=0.0, llave_jugador=False, vivo=True, terminado=False):
         # Atributos BASE
         self.mapa = mapa
         self.orientacion_jugador = orientacion_jugador
         self.posicion_jugador = np.array(posicion_jugador)
         self.steps = pasos_jugador
         self.tiene_llave = llave_jugador
-        self.alive = vivo_jugador
+        self.alive = vivo
+        self.done = terminado
 
         # Atributos para el cálculo de recompensas
         self.colision = False
@@ -34,7 +35,11 @@ class Estado:
     
     def apply_action(self, next_action):
         # Aumentamos en 1 el numero de acciones totales empleadas
-        self.steps += 0.01
+        self.steps += 1.0
+
+        if self.steps > 100.0:
+            self.done = True
+            return self
 
         # Reseteamos los flags
         self.colision = False
@@ -48,6 +53,7 @@ class Estado:
 
             if(next_cell == CellType.ENEMY):
                 self.alive = False
+                self.done = True
             elif(next_cell == CellType.KEY):
                 self.tiene_llave = True
                 self.consigue_llave = True
@@ -70,11 +76,11 @@ class Estado:
                 self.mapa.set_cell(self.posicion_jugador + Estado.get_orientation_offset(self.orientacion_jugador), CellType.FREE)
                 self.mapa.enemies -= 1
                 self.elimina_enemigo = True
-        
+        '''
         # Matar al jugador si se supera el límite de acciones
         if(self.steps>1.0):
             self.alive = False
-        
+        '''
         # siempre devolvemos self modifificado para hacer un uso de memoria eficiente
         return self            
 
@@ -109,13 +115,13 @@ class Estado:
     
     def is_win(self, task):
         if task == Task.FIND_KEY:
-            return self.tiene_llave and self.alive
+            return self.tiene_llave
         
         elif task == Task.FIND_DOOR:
             return self.is_goal()
         
         elif task == Task.KILL_ENEMIES:
-            return self.mapa.enemies == 0  and self.alive
+            return self.mapa.enemies == 0
         
         elif task == Task.ZELDA:
             return self.tiene_llave and self.is_goal()
@@ -124,7 +130,7 @@ class Estado:
             return self.tiene_llave and self.is_goal() and self.mapa.enemies == 0
 
     def is_goal(self):
-        return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR and self.alive
+        return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR
     
     '''
     def get_reward(self, task):
@@ -133,7 +139,7 @@ class Estado:
         elif not self.alive:
             return -1
         else:
-    '''
+    
     def get_reward(self, task):
         if self.is_win(task):
             return 1000  # Recompensa por completar la misión
@@ -156,9 +162,34 @@ class Estado:
         
         else:
             return -1  # Penalización por cada movimiento
+          '''  
+
+    def get_reward(self, task):
+        
+        if self.is_win(task):
+            return 1000  # Recompensa por completar la misión
+        
+        elif self.consigue_llave:
+            return 500  # Recompensa por conseguir la llave
             
+        elif  self.elimina_enemigo:
+            return 500  # Recompensa por eliminar un enemigo
+            
+        elif not self.alive:
+            return -1000  # Penalización por morir por enemigo
+        
+        elif self.colision:
+            return -100  # Penalización por colisión
+        
+        elif self.nueva_casilla:
+            #return self.steps  # Recompensa por explorar una nueva área
+            return 10
+        
+        else:
+            return 0  # Penalización por cada movimiento
+
     def __key(self):
-        return (self.posicion_jugador, self.orientacion_jugador, self.steps, self.tiene_llave, self.alive)
+        return (self.posicion_jugador, self.orientacion_jugador, self.steps, self.tiene_llave, self.alive, self.done)
     
     def __hash__(self):
         return hash(self.__key())

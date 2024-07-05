@@ -17,7 +17,7 @@ model = sb3.A2C.load(model_path, env=env)
 episodes = 10
 
 for ep in range(episodes):
-    obs = env.reset()
+    obs, _ = env.reset()    # Extraer solo la observación
     done = False
     while not done:
         action, _ = model.predict(obs)

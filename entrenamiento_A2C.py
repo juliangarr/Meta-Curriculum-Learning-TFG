@@ -7,8 +7,8 @@ from Utiles import *
 
 import os
 
-models_dir  = "models/A2C"
-logs_dir    = "logs/A2C"
+models_dir  = "models_SIMPLE/A2C"
+logs_dir    = "logs_SIMPLE/A2C"
 
 if not os.path.exists(models_dir):
     os.makedirs(models_dir)
@@ -28,7 +28,7 @@ model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=logs_dir)
 TIMESTEPS = 10000
 for i in range(1,10):
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="A2C")
-    model.save(f"{models_dir}/model_{i}")
+    model.save(f"{models_dir}/model_key_{i}")
 
 
 '''

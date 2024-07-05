@@ -9,7 +9,7 @@ class ZeldaEnv(gym.Env):
 
     metadata = {"render_modes": ["human"], "render_fps": 30}
     
-    def __init__(self, mapa, task, pos_jugador=[1, 1], orientacion_jugador=0, llave_jugador=False, env_id="ZeldaEnv-v0"):
+    def __init__(self, mapa, task, pos_jugador=[1, 1], orientacion_jugador=1, pasos_jugador=0.0, llave_jugador=False, vivo=True, terminado=False):
         super(ZeldaEnv, self).__init__()
         #super().__init__()
 
@@ -23,7 +23,7 @@ class ZeldaEnv(gym.Env):
         self.llave_inicial = llave_jugador
         self.mapa_inicial = copy.deepcopy(mapa)
 
-        self.state = Estado(self.mapa, [pos_jugador[0], pos_jugador[1]], orientacion_jugador, 0, llave_jugador) # Estado inicial, se actualiza en reset()
+        self.state = Estado(self.mapa, [pos_jugador[0], pos_jugador[1]], orientacion_jugador, pasos_jugador, llave_jugador, vivo, terminado) # Estado inicial, se actualiza en reset()
         
         # Definir las acciones: 0 = FORWARD, 1 = TURN_LEFT, 2 = TURN_RIGHT, 3 = ATTACK
         self.action_space = spaces.Discrete(4)
@@ -47,8 +47,8 @@ class ZeldaEnv(gym.Env):
         # Reiniciar el mapa y el estado del jugador
         self.mapa.mapa = self.mapa_inicial.mapa.copy()
         self.mapa.enemies = self.mapa_inicial.enemies
-        self.state = Estado(self.mapa, [self.pos_inicial[0], self.pos_inicial[1]], self.orientacion_inicial, 0, self.llave_inicial)
-        return self._get_observation()
+        self.state = Estado(self.mapa, [self.pos_inicial[0], self.pos_inicial[1]], self.orientacion_inicial, llave_jugador=self.llave_inicial)
+        return self._get_observation(), self._get_info()
     
     def step(self, action):
         self.state.apply_action(action)
@@ -57,7 +57,7 @@ class ZeldaEnv(gym.Env):
         reward = self.state.get_reward(self.task)
         self.total_reward += reward
 
-        done = not self.state.alive or self.state.is_win(self.task)
+        done = self.state.done or self.state.is_win(self.task)
         obs = self._get_observation()
         info = self._get_info()
         return obs, reward, done, False, info
@@ -69,7 +69,7 @@ class ZeldaEnv(gym.Env):
         # Información adicional
         position = self.state.posicion_jugador / np.array([self.mapa.rows, self.mapa.cols])  # Normalizar posición
         orientation = self.state.orientacion_jugador / 3.0  # Normalizar orientación (valores entre 0 y 3)
-        steps = np.array([self.state.steps])
+        steps = np.array([self.state.steps/100.0])
         has_key = np.array([1.0 if self.state.tiene_llave else 0.0])
 
         # Concatenar toda la información en un solo vector

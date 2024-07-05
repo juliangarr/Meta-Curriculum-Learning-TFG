@@ -7,7 +7,7 @@ from Mapa import *
 from Estado import *
 
 # Definir un mapa de ejemplo para inicialización
-mapa = Mapa('zelda_lvl0.txt')
+mapa = Mapa('zelda_0.txt')
 
 # Posición inicial del jugador y orientación (por ejemplo, arriba (0))
 posicion_jugador = (1, 1)  # Cambia esta posición según el mapa
@@ -39,6 +39,8 @@ def print_estado(estado):
     print(f"Consigue llave: {estado.consigue_llave}")
     print(f"Elimina enemigo: {estado.elimina_enemigo}")
     print(f"Nueva casilla: {estado.nueva_casilla}")
+    print(f"Terminado: {estado.done}")
+    print(f"is_GOAL: {estado.is_goal()}")
     print('\n')
     print(f"Memoria: \n")
     print(estado.memoria)
@@ -64,13 +66,17 @@ def get_action_from_key(key):
     #    return Action.IDLE
 
 # Bucle principal del juego
-while estado.alive and not estado.is_win(Task.ZELDA):
+while not estado.done and not estado.is_win(Task.ZELDA):
     print_estado(estado)
     key = input("Introduce una acción (W/A/S/D/P): ").lower()
     action = get_action_from_key(key)
     estado = estado.apply_action(action)
 
-if estado.alive:
-    print("¡Has ganado!")
+if estado.done:
+    if estado.alive:
+        print("¡Has perdido!")
+    else:
+        print("¡Has muerto!")
+    
 else:
-    print("¡Has muerto!")
+    print("¡Has ganado!")
