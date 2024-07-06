@@ -25,7 +25,7 @@ SEED = 42
 # Crear el modelo A2C
 model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=logs_dir, seed=SEED)
 
-TIMESTEPS = 10
+TIMESTEPS = 100000
 for i in range(1,11):
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="ZELDA_simple")
     model.save(f"{models_dir}/model_{i}")

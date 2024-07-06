@@ -1,0 +1,29 @@
+TAREA: ZELDA_Z_SIMPLE
+
+
+Mapa 0: s_zelda_0.txt
+Episodio,TotalReward,Pasos
+1,0,101
+2,0,101
+3,0,101
+4,0,101
+5,0,101
+6,0,101
+7,0,101
+8,0,101
+9,0,101
+10,0,101
+
+Mapa 1: s_zelda_1.txt
+Episodio,TotalReward,Pasos
+1,0,101
+2,0,101
+3,0,101
+4,0,101
+5,0,101
+6,0,101
+7,0,101
+8,0,101
+9,0,101
+10,0,101
+
