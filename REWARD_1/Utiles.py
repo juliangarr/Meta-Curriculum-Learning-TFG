@@ -13,12 +13,14 @@ class CellType(IntEnum):
     ENEMY = 2
     KEY = 3
     DOOR = 4
+    #AGENT = 5
 
 class Task(IntEnum):
     FIND_KEY = 0
     FIND_DOOR = 1
     KILL_ENEMIES = 2
     ZELDA = 3
+    ALL = 4
 
 class Direction(IntEnum):
     UP = 0

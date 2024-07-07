@@ -3,12 +3,7 @@ from evaluar_tarea import evaluar_tarea
 from Mapa import *
 from ZeldaEnv import *
 from Utiles import *
-
 import os
-import csv
-
-# Establecer la semilla
-SEED = 42
 
 models_dir = "MODELS_CL/CL_2"
 logs_dir    = "LOGS_CL/CL_2"
@@ -38,12 +33,12 @@ posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 TIMESTEPS = 100000
 
 # Inicializar el entorno y el modelo
-env = ZeldaEnv(mapas[0], TASK, pos_jugador=posiciones[0])
+env = ZeldaEnv(TASK, mapas[0], pos_jugador=posiciones[0])
 model = sb3.A2C.load("MODELS_2/simple_2/model_final.zip", env=env, verbose=1, tensorboard_log=f"{logs_dir}")
 
 # Entrenar y guardar el modelo para cada mapa
 for mapa, i, pos in zip(mapas, range(len(mapas)), posiciones):
-    env = ZeldaEnv(mapa, TASK, pos_jugador=pos)
+    env = ZeldaEnv(TASK, mapa, pos_jugador=pos)
     model.set_env(env)
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"CL_2")
     model.save(f"{models_dir}/model_{i}")

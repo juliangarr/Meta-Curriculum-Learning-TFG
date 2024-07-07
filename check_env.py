@@ -8,7 +8,7 @@ from Utiles import *
 mapa = Mapa('key_0.txt')  # Ajusta el nombre del archivo según tu caso
 
 # Crear una instancia del entorno
-env = ZeldaEnv(mapa=mapa, task=Task.ZELDA, pos_jugador=[1, 1], orientacion_jugador=0, llave_jugador=False)
+env = ZeldaEnv(task=Task.FIND_KEY, mapa=mapa)
 
 # It will check your custom environment and output additional warnings if needed
 check_env(env)

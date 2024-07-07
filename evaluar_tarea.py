@@ -20,7 +20,7 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
 
 
         for mapa, i, pos in zip(mapas, range(len(mapas)), posiciones):
-            env = ZeldaEnv(mapa, Task, pos_jugador=pos)
+            env = ZeldaEnv(Task, mapa, pos_jugador=pos)
             env.reset()
 
             model = sb3.A2C.load(model_path, env=env)
@@ -38,6 +38,6 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
 
                 #print(f"Episodio {ep+1} completado por tarea {i}.")
                 #print(f"Recompensa total: {env.total_reward}")
-                writer.writerow([ep+1, env.total_reward, env.pasos])
+                writer.writerow([ep+1, env.state.score, env.state.steps])
             
             writer.writerow([])

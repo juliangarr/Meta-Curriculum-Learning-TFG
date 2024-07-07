@@ -3,7 +3,6 @@ from Mapa import *
 from ZeldaEnv import *
 from Utiles import *
 from evaluar_tarea import evaluar_tarea
-
 import os
 
 models_dir  = "models_Simple_Zelda/ZELDA_simple"
@@ -17,7 +16,7 @@ if not os.path.exists(logs_dir):
 
 # Crear el entorno
 mapa = Mapa("s_zelda_0.txt")
-env = ZeldaEnv(mapa, Task.ZELDA) 
+env = ZeldaEnv(Task.ZELDA, mapa) 
 
 # Indicar la semilla
 SEED = 42
@@ -26,6 +25,7 @@ SEED = 42
 model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=logs_dir, seed=SEED)
 
 TIMESTEPS = 100000
+
 for i in range(1,11):
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="ZELDA_simple")
     model.save(f"{models_dir}/model_{i}")

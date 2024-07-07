@@ -3,9 +3,7 @@ from evaluar_tarea import evaluar_tarea
 from Mapa import *
 from ZeldaEnv import *
 from Utiles import *
-
 import os
-import csv
 import copy
 
 # Establecer la semilla
@@ -40,7 +38,7 @@ TIMESTEPS = 100000
 ALPHA = 0.1          # Tasa de aprendizaje para la actualización de Reptile
 
 # inicializar el entorno y el modelo
-env = ZeldaEnv(mapas[0], TASK, pos_jugador=posiciones[0])
+env = ZeldaEnv(TASK, mapas[0], pos_jugador=posiciones[0])
 model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir}", seed=SEED)
 
 #print(model.get_parameters())
@@ -49,7 +47,7 @@ model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir}", seed
 
 # Meta-entrenamiento con Reptile
 for mapa, pos, i in zip(mapas, posiciones, range(len(mapas))):
-    env = ZeldaEnv(mapa, TASK, pos_jugador=pos)
+    env = ZeldaEnv(TASK, mapa, pos_jugador=pos)
     model.set_env(env)
 
     old_params = copy.deepcopy(model.policy.state_dict())

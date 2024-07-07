@@ -3,9 +3,7 @@ from Mapa import *
 from ZeldaEnv import *
 from Utiles import *
 from evaluar_tarea import evaluar_tarea
-
 import os
-import csv
 
 # Establecer la semilla
 SEED = 42
@@ -13,6 +11,19 @@ SEED = 42
 models_directories = ["MODELS_SIMPLE/REPTILE_KEY", "MODELS_SIMPLE/REPTILE_DOOR", "MODELS_SIMPLE/REPTILE_ENEMIES"]
 #logs_directories    = ["LOGS_SIMPLE/KEY_REPTILE", "LOGS_SIMPLE/DOOR_REPTILE", "LOGS_SIMPLE/ENEMIES_REPTILE"]
 csv_dir = "CSV"
+
+logs_dir_inicial = "LOGS_SIMPLE"
+
+for models_dir in models_directories:
+    if not os.path.exists(models_dir):
+        os.makedirs(models_dir)
+
+if not os.path.exists(csv_dir):
+    os.makedirs(csv_dir)
+
+if not os.path.exists(logs_dir_inicial):
+    os.makedirs(logs_dir_inicial)
+
 '''
 for models_dir, logs_dir in zip(models_directories, logs_directories):
     if not os.path.exists(models_dir):
@@ -30,21 +41,22 @@ tasks = [Task.FIND_KEY, Task.FIND_DOOR, Task.KILL_ENEMIES]
 # Levels names
 lvl_names = ["key", "door", "enemies"]
 
+# Llave
+has_key = [False, True, False]
+
 # Indicar las posiciones iniciales del jugador
 posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 
 TIMESTEPS = 100000
 ALPHA = 0.1          # Tasa de aprendizaje para la actualización de Reptile
 
-logs_dir_inicial = "LOGS_SIMPLE"
-
 # Inicializar el entorno y el modelo
 mapa_inicial = Mapa("key_0.txt")
-env = ZeldaEnv(mapa_inicial, Task.FIND_KEY, pos_jugador=posiciones[0])
+env = ZeldaEnv(Task.FIND_KEY, mapa_inicial, pos_jugador=posiciones[0])
 model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir_inicial}", seed=SEED)
 
 # Para cada tarea entrenar todos los mapas
-for task, lvl_name, models_dir in zip(tasks, lvl_names, models_directories):
+for task, lvl_name, models_dir, llave in zip(tasks, lvl_names, models_directories, has_key):
     # Listado de archivos de niveles
     level_files = [f"{lvl_name}_0.txt", f"{lvl_name}_1.txt", f"{lvl_name}_2.txt", f"{lvl_name}_3.txt", f"{lvl_name}_4.txt"]
 
@@ -53,7 +65,7 @@ for task, lvl_name, models_dir in zip(tasks, lvl_names, models_directories):
 
     # Entrenar y guardar el modelo para cada mapa
     for mapa, i, pos in zip(mapas, range(len(mapas)), posiciones):
-        env = ZeldaEnv(mapa, task, pos_jugador=pos)
+        env = ZeldaEnv(task, mapa, pos_jugador=pos, llave_jugador=llave)
         model.set_env(env)
 
         # Coger los parámetros iniciales

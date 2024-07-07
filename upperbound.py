@@ -3,9 +3,7 @@ from Mapa import *
 from ZeldaEnv import *
 from Utiles import *
 from evaluar_tarea import evaluar_tarea
-
 import os
-import csv
 
 # Establecer la semilla
 SEED = 42
@@ -38,7 +36,7 @@ posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 TIMESTEPS = 100000
 
 # Inicializar el entorno y el modelo
-env = ZeldaEnv(mapas[0], TASK, pos_jugador=posiciones[0])
+env = ZeldaEnv(TASK, mapas[0], pos_jugador=posiciones[0])
 model = sb3.A2C('MlpPolicy', env, verbose=1, tensorboard_log=f"{logs_dir}", seed=SEED)
 
 # Entrenar 3 veces todos los mapas
@@ -46,7 +44,7 @@ for j in range(3):
     mapas = [Mapa(f"{file}") for file in level_files]
     # Entrenar y guardar el modelo para cada mapa
     for mapa, i, pos in zip(mapas, range(len(mapas)), posiciones):
-        env = ZeldaEnv(mapa, TASK, pos_jugador=pos)
+        env = ZeldaEnv(TASK, mapa, pos_jugador=pos)
         model.set_env(env)
         model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"Upperbound")
         model.save(f"{models_dir}/model_{j}_{i}")

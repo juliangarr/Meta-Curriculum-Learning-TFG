@@ -10,7 +10,7 @@ def main():
     mapa = Mapa('s_key_0.txt')  # Ajusta el nombre del archivo según tu caso
     
     # Crear una instancia del entorno
-    env = ZeldaEnv(mapa=mapa, task=Task.ZELDA, pos_jugador=[1, 1], orientacion_jugador=1, llave_jugador=False)
+    env = ZeldaEnv(task=Task.ZELDA, mapa=mapa)
     
     # Inicializar el entorno
     obs = env.reset()
@@ -42,6 +42,16 @@ def main():
     print(f"Mapa - mapa: {mapa.mapa}")
     print(f"Mapa - env.mapa: {env.mapa.mapa}")
     print(f"Mapa - env.state.mapa: {env.state.mapa.mapa}")
+    print("\n")
+    print(f"Score: {env.state.score}")
+    print(f"Recompensa: {env.reward}")
+    print(f"Posición del jugador: {env.state.posicion_jugador}")
+    print(f"Orientación del jugador: {env.state.orientacion_jugador}")
+    print(f"Pasos del jugador: {env.state.steps}")
+    print(f"Tiene llave: {env.state.tiene_llave}")
+    print(f"Vivo: {env.state.alive}")
+    print(f"Terminado: {env.state.done}")
+    print("\n")
     
     # Realizar algunos pasos más
     for _ in range(5):

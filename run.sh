@@ -17,4 +17,16 @@ python upperbound.py
 
 python zelda_simple.py
 
+python zelda_simple.py
+
+python simple_only_2.py
+python cl_only_2.py
+
+python reptile_2_times.py
+python cl_R2.py
+
+
+
+
+
 

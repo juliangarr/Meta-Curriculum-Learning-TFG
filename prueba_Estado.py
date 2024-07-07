@@ -16,7 +16,7 @@ pasos_jugador = 0.0
 llave_jugador = False
 vivo_jugador = True
 
-estado = Estado(mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador)
+estado = Estado(Task.ZELDA, mapa, posicion_jugador, orientacion_jugador, pasos_jugador, llave_jugador, vivo_jugador)
 
 # Función para imprimir el estado actual del mapa y jugador
 def print_estado(estado):
@@ -33,6 +33,7 @@ def print_estado(estado):
     print(f"Pasos del jugador: {estado.steps}")
     print(f"Jugador tiene llave: {estado.tiene_llave}")
     print(f"Jugador está vivo: {estado.alive}")
+    print(f"Score: {estado.score}")
 
     print('\n')
     print(f"Colisión: {estado.colision}")
@@ -80,3 +81,5 @@ if estado.done:
     
 else:
     print("¡Has ganado!")
+
+print(f"Puntuación final: {estado.score}")
