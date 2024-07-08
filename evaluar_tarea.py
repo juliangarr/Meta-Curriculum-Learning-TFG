@@ -57,17 +57,9 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
             writer.writerow([])
             writer.writerow([])
 
-        print(reward_mean)
-        print(score_mean)
-        print(step_mean)
-
         reward_mean = np.array(reward_mean)/episodes
         score_mean = np.array(score_mean)/episodes
         step_mean = np.array(step_mean)/episodes
-
-        print(reward_mean)
-        print(score_mean)
-        print(step_mean)
         
         r_mean = sum(reward_mean) / len(reward_mean)
         s_mean = sum(score_mean) / len(score_mean)
