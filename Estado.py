@@ -187,17 +187,17 @@ class Estado:
             self.score += 500  # Recompensa por conseguir la llave
             
         elif  self.elimina_enemigo:
-            self.score += 250  # Recompensa por eliminar un enemigo
+            self.score += 500  # Recompensa por eliminar un enemigo
             
         elif not self.alive:
             self.score = -1000  # Penalización por morir por enemigo
         
         elif self.colision:
             self.score += -10  # Penalización por colisión
-        
+
         elif self.nueva_casilla:
-            self.score += 1
-        
+            self.score += 10
+
         else:
             self.score += -1  # Penalización por cada movimiento
 

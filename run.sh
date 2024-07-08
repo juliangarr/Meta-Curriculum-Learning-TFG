@@ -17,11 +17,16 @@ python cl_R_Beta.py
 
 python upperbound.py
 
-#python simple_only_2.py
-#python cl_only_2.py
+python reptile_order.py
+python r_Beta_order.py
+python cl_R_order.py
+python cl_R_Beta_order.py
 
-#python reptile_2_times.py
-#python cl_R2.py
+python simple_only_2.py
+python cl_only_2.py
+
+python reptile_2_times.py
+python cl_R2.py
 
 
 

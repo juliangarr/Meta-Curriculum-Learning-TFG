@@ -28,7 +28,7 @@ class ZeldaEnv(gym.Env):
         self.action_space = spaces.Discrete(4)
         
         # Definir el espacio de observación
-        self.obs_size = self.mapa.rows * self.mapa.cols + 4  # Tamaño del mapa aplanado
+        self.obs_size = self.mapa.rows * self.mapa.cols + 5  # Tamaño del mapa aplanado
         self.observation_space = spaces.Box(
             low=0, 
             high=1, 
@@ -37,11 +37,11 @@ class ZeldaEnv(gym.Env):
         )
 
         # Inicializar la recompensa
-        self.reward = 0
+        self.total_reward = 0
 
     def reset(self, seed=None):
         #super().reset(seed=seed)
-        self.reward = 0
+        self.total_reward = 0
 
         # Reiniciar el mapa y el estado del jugador
         self.mapa.mapa = self.mapa_inicial.mapa.copy()
@@ -60,11 +60,13 @@ class ZeldaEnv(gym.Env):
 
         # Calcular recompensa
         if not self.state.alive:
-            reward = -1000
+            reward = -200
         elif self.state.is_win(self.task):
             reward = 1000
         else:
             reward = next_score - previous_score
+        
+        self.total_reward += reward
 
         done = self.state.done or self.state.is_win(self.task)
         obs = self._get_observation()
@@ -80,6 +82,7 @@ class ZeldaEnv(gym.Env):
         position = self.state.posicion_jugador / np.array([self.mapa.rows-1, self.mapa.cols-1])  # Normalizar posición
         orientation = self.state.orientacion_jugador / 3.0  # Normalizar orientación (valores entre 0 y 3)
         has_key = np.array([1.0 if self.state.tiene_llave else 0.0])
+        steps = np.array([self.state.steps/100.0])
 
         # Concatenar toda la información en un solo vector
-        return np.concatenate([flat_map, position, [orientation], has_key]).astype(np.float32)
+        return np.concatenate([flat_map, position, [orientation], has_key, steps]).astype(np.float32)
