@@ -36,7 +36,7 @@ lvl_names = ["key", "door", "enemies"]
 # Indicar las posiciones iniciales del jugador
 posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 
-TIMESTEPS = 100000
+TIMESTEPS = 50000
 
 # Inicializar el entorno y el modelo
 mapa_inicial = Mapa("key_0.txt")

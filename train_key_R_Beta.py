@@ -34,7 +34,7 @@ mapas = [Mapa(f"{file}") for file in level_files]
 # Indicar las posiciones iniciales del jugador
 posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 
-TIMESTEPS = 100000
+TIMESTEPS = 50000
 ALPHA = 0.1          # Tasa de aprendizaje para la actualización de Reptile
 
 # inicializar el entorno y el modelo
@@ -58,7 +58,7 @@ for mapa, pos, i in zip(mapas, posiciones, range(len(mapas))):
 
     # Meta-actualización
     for param_key in old_params.keys():
-        old_params[param_key] += (1.0-ALPHA) * old_params[param_key] + ALPHA * (new_params[param_key] - old_params[param_key])
+        old_params[param_key] = (1.0-ALPHA) * old_params[param_key] + ALPHA * (new_params[param_key] - old_params[param_key])
 
     # Establecer los parámetros del modelo a la diferencia ajustada
     model.policy.load_state_dict(old_params)   

@@ -33,7 +33,7 @@ mapas = [Mapa(f"{file}") for file in level_files]
 # Indicar las posiciones iniciales del jugador
 posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 
-TIMESTEPS = 100000
+TIMESTEPS = 50000
 
 # Inicializar el entorno y el modelo
 env = ZeldaEnv(TASK, mapas[0], pos_jugador=posiciones[0])

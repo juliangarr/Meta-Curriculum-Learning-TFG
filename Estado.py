@@ -130,6 +130,30 @@ class Estado:
     def is_goal(self):
         return self.mapa.get_cell_type(self.posicion_jugador) == CellType.DOOR and self.tiene_llave
 
+    '''
+    def get_reward(self, task):
+        if self.is_win(task):
+            return 1000  # Recompensa por completar la misión
+        
+        elif self.consigue_llave:
+            return 500  # Recompensa por conseguir la llave
+            
+        elif  self.elimina_enemigo:
+            return 250  # Recompensa por eliminar un enemigo
+            
+        elif not self.alive and self.steps < 0.99:
+            return -1000  # Penalización por morir por enemigo
+        
+        elif self.colision:
+            return -100  # Penalización por colisión
+        
+        elif self.nueva_casilla:
+            #return self.steps  # Recompensa por explorar una nueva área
+            return 10
+        
+        else:
+            return -1  # Penalización por cada movimiento
+    
     def update_score(self):
         
         if self.is_win(self.task):
@@ -152,6 +176,30 @@ class Estado:
         
         else:
             self.score += 0  # Penalización por cada movimiento
+        '''
+
+    def update_score(self):
+        
+        if self.is_win(self.task):
+            self.score = 1000           # Puntuación por completar la misión
+        
+        elif self.consigue_llave:
+            self.score += 500  # Recompensa por conseguir la llave
+            
+        elif  self.elimina_enemigo:
+            self.score += 250  # Recompensa por eliminar un enemigo
+            
+        elif not self.alive:
+            self.score = -1000  # Penalización por morir por enemigo
+        
+        elif self.colision:
+            self.score += -10  # Penalización por colisión
+        
+        elif self.nueva_casilla:
+            self.score += 1
+        
+        else:
+            self.score += -1  # Penalización por cada movimiento
 
     def __key(self):
         return (self.task, self.posicion_jugador, self.orientacion_jugador, self.steps, self.tiene_llave, self.alive, self.done)

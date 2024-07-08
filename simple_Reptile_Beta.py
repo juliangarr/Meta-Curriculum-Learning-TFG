@@ -36,7 +36,7 @@ has_key = [False, True, False]
 # Indicar las posiciones iniciales del jugador
 posiciones = [(1, 1), (7, 1), (1, 11), (7, 4), (7, 1)]
 
-TIMESTEPS = 100000
+TIMESTEPS = 50000
 ALPHA = 0.1          # Tasa de aprendizaje para la actualización de Reptile
 
 # Inicializar el entorno y el modelo
