@@ -78,7 +78,7 @@ for i, pos  in zip(range(len(posiciones)), posiciones):
         
         # Meta-actualización
         for param_key in old_params.keys():
-            old_params[param_key] += ALPHA * (new_params[param_key] - old_params[param_key])
+            old_params[param_key] = (1.0-ALPHA) * old_params[param_key] + ALPHA * (new_params[param_key] - old_params[param_key])
 
         # Establecer los parámetros del modelo a la diferencia ajustada
         model.policy.load_state_dict(old_params)   

@@ -30,7 +30,7 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
 
             model = sb3.A2C.load(model_path, env=env)
 
-            episodes = 20
+            episodes = 50
             writer.writerow([f"Mapa {i}: {level_files[i]}"])
             writer.writerow(["Episodio", "TotalReward", "Pasos", "Score"])
 
