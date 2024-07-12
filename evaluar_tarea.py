@@ -67,6 +67,6 @@ def evaluar_tarea(model_path, csv_filename, csv_dir, extension, level_files, pos
         w = sum(wins)
         
         writer.writerow(["", "reward_M", "step_M", "score_M"])
-        writer.writerow(["TOTAS_MEANS", r_mean, st_mean, s_mean])
+        writer.writerow(["TOTAL_MEANS", r_mean, st_mean, s_mean])
         writer.writerow(["TOTAL_WINS", w])
         writer.writerow(["Win_MEAN", w/len(wins)])
