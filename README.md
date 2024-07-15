@@ -2,8 +2,7 @@
 
 ## Descripción
 
-Este proyecto contiene la implementación explicada en el Trabajo de Fin de Grado titulado "Curriulum Learning en Videojuegos de Atari: desde tareas simples a tareas complejas".
-
+Este proyecto contiene la implementación explicada en el Trabajo de Fin de Grado titulado "Curriulum Learning en Videojuegos de Atari: Extracción de conocimiento desde tareas simples hacia tareas complejas".
 
 ## Estructura del Proyecto
 
@@ -21,8 +20,8 @@ Este proyecto contiene la implementación explicada en el Trabajo de Fin de Grad
 - `Mapa.py`: Define la clase Mapa del juego.
 - `mapa_draw.py`: Fichero para dibujar mapas de ejemplo.
 - `prueba_Environment.py`: Fichero para probar el entorno del juego.
-- `prueba_Estado.py`: Fichero para probar el funcionamiento del juego.
-- `reptile_order.py`: Implementación de Reptile sobre CL alterando el orden.
+- `prueba_Estado.py`: Fichero para probar el funcionamiento del juego por teclado.
+- `reptile_order.py`: Implementación de Reptile sobre CL alterando el orden de las tareas.
 - `simple.py`: Implementación básica de Curriculum Learning.
 - `simple_Reptile.py`: Implementación de Reptile sobre CL.
 - `upperbound.py`: Modelo de RL base (baseline).
@@ -35,15 +34,18 @@ Este proyecto contiene la implementación explicada en el Trabajo de Fin de Grad
 ## Instrucciones de Uso
 
 1. **Preparar el entorno:**
-   - Asegúrate de tener Python instalado.
-   - Instala las dependencias necesarias (pueden estar listadas en un archivo `requirements.txt` no visible en la captura).
+   - Tener Python instalado.
+   - Instalar las dependencias necesarias a través del archivo environment.yml (conda). 
+      - **Observaciones:**
+         - Revisar el archivo environment.yml por si se desea cambiar el nombre del entorno (tfg) o evitar algunas dependencias.
+         - Las versiones de TensorFlow y Pytorch utilizadas son las versiones para CPU-only. Revisar estas dependencias si se desea hacer uso de la GPU.
+   
 
 2. **Scripts de prueba:**
-   - Para probar el juego desde teclado, ejecuta `python evaluar_tarea.py`
-   - Para verificar el entorno, ejecuta `python check_env.py`.
-   - Para probar el entorno del juego, ejecuta `python prueba_Environment.py.
-   - Para evaluar una tarea, ejecuta `python evaluar_tarea.py`.
+   - Para probar el juego desde teclado, ejecute `python evaluar_tarea.py`
+   - Para verificar el entorno, ejecute `python check_env.py`.
+   - Para probar el entorno del juego, ejecute `python prueba_Environment.py`.
 
 3. **Entrenamiento y evaluación de modelos:**
-   - Los modelos simples pueden ser entrenados y evaluados utilizando scripts dentro de `MODELS_SIMPLE/`.
+   - Los modelos pueden ser entrenados y evaluados ejecuntando el script `run.sh` o ejecutando con python cada fichero llamado en este script.
 
